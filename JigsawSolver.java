@@ -4,114 +4,56 @@ import java.util.ArrayList;
 public class JigsawSolver{
     public static void main(String[] args){
         // start with 9 pieces
-        List<Piece> puzzle = new ArrayList<>();
-        puzzle.add(new Piece("topLeft", 0,0,10,-120));
-        puzzle.add(new Piece("top", -10,0,20,100));
-        puzzle.add(new Piece("topRight", -20,0,0,30));
-        puzzle.add(new Piece("right", -90,-30,0,40));
-        puzzle.add(new Piece("bottomRight", -60,-40,0,50));
-        puzzle.add(new Piece("bottom", -70,80,60,0));
-        puzzle.add(new Piece("bottomLeft", 0,130,70,0));
-        puzzle.add(new Piece("left", 0,120,-110,-130));
-        puzzle.add(new Piece("middle", 110,-100,90,-80));
+        Piece [] puzzle = new Piece[]{
+                new Piece("topLeft", 0, 0, 10, -120),
+                new Piece("top", -10, 0, 20, 100),
+                new Piece("topRight", -20, 0, 0, 30),
+                new Piece("right", -90, -30, 0, 40),
+                new Piece("bottomRight", -60, -40, 0, 50),
+                new Piece("bottom", -70, 80, 60, 0),
+                new Piece("bottomLeft", 0, 130, 70, 0),
+                new Piece("left", 0, 120, -110, -130),
+                new Piece("middle", 110, -100, 90, -80)
+        };
 
         solve(puzzle);
     }
 
-    private static void solve(List<Piece> puzzle){
+    private static void solve(Piece[] puzzle){
+        int endIndex = 0;
         int tries = 100;
-        List<Piece> solved = new ArrayList<>();
-        while(puzzle.size() > 0 && tries-- > 0){
-            List<Piece> solvedThisTurn = trySolve(puzzle);
-            solved.addAll(solvedThisTurn);
-            puzzle.removeAll(solvedThisTurn);
-        }
-        for(int i = 0; i < solved.size(); i++){
-            System.out.print(solved.get(i).getName() + " - ");
-            if(i == 2 || i == 5 || i == 8){
-                System.out.println("");
-            }
-        }
+        int puzzleSize = puzzle.length;
+        Piece[] solved = new Piece[puzzleSize];
+        int solvedIndex = 0;
 
-        if(puzzle.size() == 0){
-            System.out.println("Solved");
-        }else {
-            System.out.println("Failed");
-            System.out.println("Left over pieces\n" + puzzle);
+        for(int i = 0; i < puzzleSize; i++){
+            Piece aPiece = puzzle[i];
+            if(aPiece.isTopLeft()){
+                solved[solvedIndex] = aPiece;
+                puzzle[i] = null;
+            }
         }
-    }
-
-    private static List<Piece> trySolve(List<Piece> puzzle){
-        List<Piece> solved = new ArrayList<>();
-
-        for(int i = 0; i < puzzle.size(); i++){
-            Piece piece = puzzle.get(i);
-            if(piece.isTopLeft()){
-                if(!solved.contains(piece)){
-                    solved.add(piece);
-                }else{
+        while(tries-- > 0 && solvedIndex < puzzleSize){
+            Piece referencePiece = solved[solvedIndex - endIndex];
+            for(int i = 0; i < puzzleSize; i++){
+                Piece aPiece = puzzle[i];
+                if(aPiece == null){
                     continue;
                 }
-            }
-            if(piece.isTop()){
-                if(!solved.contains(piece)){
-                    solved.add(piece);
-                }else{
-                    continue;
+                if(referencePiece.fits(aPiece)){
+                    solvedIndex++;
+                    solved[solvedIndex] = aPiece;
+                    puzzle[i] = null;
+                    break;
                 }
             }
-            if(piece.isTopRight()){
-                if(!solved.contains(piece)){
-                    solved.add(piece);
-                }else{
-                    continue;
-                }
-            }
-            if(piece.isLeft()){
-                if(!solved.contains(piece)){
-                    solved.add(piece);
-                }else{
-                    continue;
-                }
-            }
-            if(!(piece.isTopLeft() && piece.isTop() && piece.isTopRight() && piece.isRight() &&
-                    piece.isBottomRight() && piece.isBottom() && piece.isBottomLeft() && piece.isLeft() )){
-                if(!solved.contains(piece)){
-                    solved.add(piece);
-                }else{
-                    continue;
-                }
-            }
-            if(piece.isRight()){
-                if(!solved.contains(piece)){
-                    solved.add(piece);
-                }else{
-                    continue;
-                }
-            }
-            if(piece.isBottomLeft()){
-                if(!solved.contains(piece)){
-                    solved.add(piece);
-                }else{
-                    continue;
-                }
-            }
-            if(piece.isBottom()){
-                if(!solved.contains(piece)){
-                    solved.add(piece);
-                }else{
-                    continue;
-                }
-            }
-            if(piece.isBottomRight()){
-                if(!solved.contains(piece)){
-                    solved.add(piece);
-                }else{
-                    continue;
+            Piece solvedPiece = solved[solvedIndex];
+            if(solvedPiece.isRight() || solvedPiece.isTopRight() || solvedPiece.isBottomRight()){
+                if(endIndex == 0){
+                    endIndex = solvedIndex;
                 }
             }
         }
-        return solved;
     }
 }
 
@@ -134,6 +76,18 @@ class Piece{
         return name;
     }
 
+    public boolean fits(Piece piece){
+        int pieceLeft = piece.left;
+        if(right == pieceLeft){
+            return true;
+        }
+        int pieceTop = piece.top;
+        if(bottom == pieceTop){
+            return true;
+        }
+        return false;
+    }
+
     public boolean isTopLeft(){
         return left == 0 && top == 0;
     }
@@ -151,18 +105,18 @@ class Piece{
     }
 
     public boolean isLeft(){
-        return left == 0;
+        return left == 0 && top != 0 && right != 0 && bottom != 0;
     }
 
     public boolean isTop(){
-        return top == 0;
+        return top == 0 && left != 0 && right != 0 && bottom != 0;
     }
 
     public boolean isRight(){
-        return right == 0;
+        return right == 0 && top != 0 && left != 0 && bottom != 0;
     }
 
     public boolean isBottom(){
-        return bottom == 0;
+        return bottom == 0 && top != 0 && right != 0 && left != 0;
     }
 }

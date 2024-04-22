@@ -82,3 +82,14 @@
 
     }
 
+        Piece[] puzzle = new Piece[]{
+                new Piece("right", 60, -50, 0, 70),
+                new Piece("topLeft", 0, 0, 10, 20),
+                new Piece("middle", 80, -70, -60, 90),
+                new Piece("bottomLeft", 0, -100, 110, 0),
+                new Piece("left", 0, -20, -80, 100),
+                new Piece("bottomMiddle", -110, -90, 120, 0),
+                new Piece("topMiddle", -10, 0, 30, 40),
+                new Piece("bottomRight", -120, -70, 0, 0),
+                new Piece("topRight", -30, 0, 0, 50)
+        };

@@ -1,5 +1,5 @@
         Piece[] solvedPuzzle = new Piece[puzzle.length];
-        Piece topLeft = getTopLeftPieceNew(puzzle);
+        Piece topLeft = getTopLeftPiece(puzzle);
         addToSolvedPuzzle(topLeft, solvedPuzzle);
         int solvedPieces = 1;
 
@@ -35,3 +35,50 @@
                 }
             }
         }
+
+
+    private static Piece getTopLeftPiece(Piece[] puzzle) {
+        Piece topLeftPiece = null;
+        for(int i = 0; i < puzzle.length; i++){
+            if(puzzle[i].isTopLeft()){
+                topLeftPiece = puzzle[i];
+                puzzle[i] = null;
+                shiftPiecesLeft(i, puzzle);
+                break;
+            }
+        }
+        return topLeftPiece;
+    }
+
+
+    private static void addToSolvedPuzzle(Piece piece, Piece[] puzzle) {
+        for (int i = 0; i < puzzle.length; i++){
+            if(puzzle[i]==null){
+                puzzle[i] = piece;
+                break;
+            }
+        }
+    }
+
+
+    private static Piece findNextRightPiece(Piece[] puzzle, Piece givenPiece) {
+        Piece nextRightPiece = null;
+        for(int i = 0; i < puzzle.length; i++){
+            if(puzzle[i].isRightFittingTo(givenPiece)){
+                nextRightPiece = puzzle[i];
+                puzzle[i] = null;
+                shiftPiecesLeft(i, puzzle);
+                break;
+            }
+        }
+        return nextRightPiece;
+    }
+
+    private static void shiftPiecesLeft(int startAt, Piece[] puzzle) {
+        for(int i = startAt; i < puzzle.length - 1; i++){
+            puzzle[i] = puzzle[i + 1];
+        }
+        puzzle[puzzle.length - 1] = null;
+
+    }
+
